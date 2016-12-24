@@ -31,7 +31,7 @@ public class MyArrayList<T> implements Iterable<T> {
         if (newCapacity < theSize)
             return;
         T[] oldItems = theItems;
-        theItems = (T[]) new Object[newCapacity];// Java 不存在对泛型数组的构建
+        theItems = (T[]) new Object[newCapacity];// Java 不存在对泛型数组的构建，通过强制类型转换实现
         for (int i = 0; i < theSize; i++) {
             theItems[i] = oldItems[i];
         }
@@ -86,9 +86,10 @@ public class MyArrayList<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new ArrayListIterator();
     }
 
+    //1. 作为 inner class, ArrayListIterator 后没有类型参数 <T>
     private class ArrayListIterator implements Iterator<T> {
         private int current = 0;
 
