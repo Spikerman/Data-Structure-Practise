@@ -31,7 +31,7 @@ public class MyArrayList<T> implements Iterable<T> {
         if (newCapacity < theSize)
             return;
         T[] oldItems = theItems;
-        theItems = (T[]) new Object[newCapacity];// 不存在泛型数组
+        theItems = (T[]) new Object[newCapacity];// Java 不存在对泛型数组的构建
         for (int i = 0; i < theSize; i++) {
             theItems[i] = oldItems[i];
         }
@@ -87,5 +87,24 @@ public class MyArrayList<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return null;
+    }
+
+    private class ArrayListIterator implements Iterator<T> {
+        private int current = 0;
+
+        @Override
+        public boolean hasNext() {
+            return current < size();
+        }
+
+        @Override
+        public T next() {
+            return theItems[current++];
+        }
+
+        @Override
+        public void remove() {
+            MyArrayList.this.remove(--current);
+        }
     }
 }
