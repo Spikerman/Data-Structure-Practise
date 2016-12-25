@@ -1,4 +1,6 @@
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Author: Spikerman < mail4spikerman@gmail.com >
@@ -78,12 +80,12 @@ public class MyLinkedList<T> implements Iterable<T> {
             throw new IndexOutOfBoundsException();
         if (idx < size() / 2) {
             p = beginMarker.next;
-            for (int i = 0; i < idx; i++) {
+            for (int i = 0; i < idx; i++) {//count: idx
                 p = p.next;
             }
         } else {
             p = endMarker.prev;
-            for (int i = size(); i > idx; i++) {
+            for (int i = size(); i > idx; i++) {//count: size()-(idx+1)+1=size()-idx
                 p = p.prev;
             }
         }
@@ -108,6 +110,40 @@ public class MyLinkedList<T> implements Iterable<T> {
             this.data = data;
             this.prev = prev;
             this.next = next;
+        }
+    }
+
+    private class LinkedListIterator implements Iterator<T> {
+        private Node<T> current = beginMarker.next;
+        private int expectedModCount = modCount;
+        private boolean okToRemove = false;
+
+        @Override
+        public boolean hasNext() {
+            return current != endMarker;
+        }
+
+        @Override
+        public T next() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            if (!hasNext())
+                throw new NoSuchElementException();
+            T nextItem = current.data;
+            current = current.next;
+            okToRemove = true;
+            return nextItem;
+        }
+
+        @Override
+        public void remove() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            if (!okToRemove)
+                throw new IllegalStateException();
+            MyLinkedList.this.remove(current.prev);
+            expectedModCount++;
+            okToRemove = false;
         }
     }
 }
