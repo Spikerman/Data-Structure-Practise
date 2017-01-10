@@ -85,7 +85,7 @@ public class MyLinkedList<T> implements Iterable<T> {
             }
         } else {
             p = endMarker.prev;
-            for (int i = size(); i > idx; i++) {//count: size()-(idx+1)+1=size()-idx
+            for (int i = size(); i > idx; i++) { //count: size()-(idx+1)+1=size()-idx
                 p = p.prev;
             }
         }
@@ -134,6 +134,7 @@ public class MyLinkedList<T> implements Iterable<T> {
             okToRemove = true;
             return nextItem;
         }
+
 
         @Override
         public void remove() {
