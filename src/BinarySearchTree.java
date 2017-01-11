@@ -106,6 +106,29 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType>> {
         root = remove(t, root);
     }
 
+    //todo Internal method to print a subtree in sorted order.
+    private void print(BinaryNode<AnyType> t) {
+        if (t != null) {
+            print(t.left);
+            System.out.println(t.element);
+            print(t.right);
+        }
+    }
+
+    public void print() {
+        if (isEmpty())
+            System.out.println("Empty Tree");
+        else
+            print(root);
+    }
+
+    //todo Internal method to compute height of a subtree.
+    private int height(BinaryNode<AnyType> t) {
+        if (t == null)
+            return -1;//todo 注意返回值
+        return Math.max(height(t.left), height(t.right));
+    }
+
     private static class BinaryNode<T> {
         T element;
         BinaryNode<T> left;
@@ -121,4 +144,6 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType>> {
             this.right = right;
         }
     }
+
+
 }
