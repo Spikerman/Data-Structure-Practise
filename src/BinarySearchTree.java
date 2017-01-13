@@ -9,7 +9,41 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType>> {
         root = null;
     }
 
-    //todo Internal method to find an item in a subtree.
+    //todo Internal method to insert into a subtree     增
+    private BinaryNode<AnyType> insert(AnyType x, BinaryNode<AnyType> t) {
+        if (t == null)
+            return new BinaryNode<AnyType>(x, null, null);//todo return the new root of the tree after insertion
+        int compareResult = x.compareTo(t.element);
+        if (compareResult < 0)
+            t.left = insert(x, t.left);
+        else if (compareResult > 0)
+            t.right = insert(x, t.right);
+        else
+            ;//todo equal do nothing
+
+        return t;
+    }
+
+    //todo Internal method to remove from a subtree     删
+    private BinaryNode<AnyType> remove(AnyType x, BinaryNode<AnyType> t) {
+        if (t == null)
+            return null;
+        int compareResult = x.compareTo(t.element);
+        if (compareResult < 0)
+            t.left = remove(x, t.left);
+        else if (compareResult > 0)
+            t.right = remove(x, t.right);
+        else if (t.left != null && t.right != null) {
+            t.element = findMin(t.right).element;
+            t.right = remove(t.element, t.right);
+        } else
+            t = (t.left != null) ? t.left : t.right;
+        return t;
+
+    }
+
+
+    //todo Internal method to find an item in a subtree. 查
     public boolean contains(AnyType x, BinaryNode<AnyType> t) {
         if (t == null)
             return false;
@@ -42,40 +76,6 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType>> {
             t = t.right;
         }
         return t;
-    }
-
-    //todo Internal method to insert into a subtree
-    private BinaryNode<AnyType> insert(AnyType x, BinaryNode<AnyType> t) {
-        if (t == null)
-            return new BinaryNode<AnyType>(x, null, null);//todo return the new root of the tree after insertion
-
-        int compareResult = x.compareTo(t.element);
-        if (compareResult < 0)
-            t.left = insert(x, t.left);
-        else if (compareResult > 0)
-            t.right = insert(x, t.right);
-        else
-            ;//todo equal do nothing
-
-        return t;
-    }
-
-    //todo Internal method to remove from a subtree.
-    private BinaryNode<AnyType> remove(AnyType x, BinaryNode<AnyType> t) {
-        if (t == null)
-            return null;
-        int compareResult = x.compareTo(t.element);
-        if (compareResult < 0)
-            t.left = remove(x, t.left);
-        else if (compareResult > 0)
-            t.right = remove(x, t.right);
-        else if (t.left != null && t.right != null) {
-            t.element = findMin(t.right).element;
-            t.right = remove(t.element, t.right);
-        } else
-            t = (t.left != null) ? t.left : t.right;
-        return t;
-
     }
 
     public boolean isEmpty() {
