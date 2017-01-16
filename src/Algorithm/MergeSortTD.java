@@ -6,7 +6,8 @@ import java.util.Random;
  * Author: Spikerman < mail4spikerman@gmail.com >
  * Created Date: 17/1/15
  */
-public class MergeSort {
+
+public class MergeSortTD {
 
     private static int[] aux;
 
@@ -25,13 +26,13 @@ public class MergeSort {
     }
 
     private static void merge(int[] arr, int low, int middle, int high) {
-        //todo 注意循环的边界范围
-        for (int i = low; i < high; i++) {
+        //todo 注意循环的边界范围,low,high,<=
+        for (int i = low; i <= high; i++) {
             aux[i] = arr[i];
         }
         int m = low;
         int n = middle + 1;
-        for (int i = low; i < high; i++) {
+        for (int i = low; i <= high; i++) {
             if (m > middle)
                 arr[i] = aux[n++];
             else if (n > high)
