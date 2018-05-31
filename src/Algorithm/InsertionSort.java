@@ -16,7 +16,7 @@ public class InsertionSort {
                     arr[j] = arr[j - 1];
                     arr[j - 1] = tmp;
                 } else {
-                    break;//todo 优化速度
+                    break;
                 }
             }
         }

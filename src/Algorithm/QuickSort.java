@@ -1,5 +1,6 @@
 package Algorithm;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -8,21 +9,15 @@ import java.util.Random;
  */
 public class QuickSort {
     private static int partition(int[] arr, int low, int high) {
-        int i = low;
-        int j = high + 1;
-        int a = arr[low];
-        while (true) {
-            while (arr[++i] < a)
-                if (i == high)
-                    break;
-            while (arr[--j] > a)
-                if (j == low)
-                    break;
-            if (i >= j)
-                break;
-            swap(arr, i, j);
-        }
-        swap(arr, low, j);//todo 此处返回值必须为 j
+        int pivot = arr[low];
+        int i = low + 1;
+        int j = high;
+        do {
+            while (i <= j && arr[i] <= pivot) i++;
+            while (i <= j && arr[j] > pivot) j--;
+            if (i < j) swap(arr, i, j);
+        } while (i < j);
+        swap(arr, low, j);
         return j;
     }
 
@@ -30,7 +25,7 @@ public class QuickSort {
         if (high <= low)
             return;
         int j = partition(arr, low, high);
-        sort(arr, low, j - 1);//todo low, j-1
+        sort(arr, low, j - 1);
         sort(arr, j + 1, high);
     }
 
@@ -46,6 +41,7 @@ public class QuickSort {
 
     public static void main(String args[]) {
         int[] arr = new int[10];
+        Arrays.fill(arr, 1);
         Random random = new Random();
         for (int i = 0; i < arr.length; i++) {
             arr[i] = random.nextInt(100);

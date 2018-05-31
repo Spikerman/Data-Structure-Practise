@@ -2,28 +2,18 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * Author: Spikerman < mail4spikerman@gmail.com >
- * Created Date: 12/24/16
- */
 public class MyLinkedList<T> implements Iterable<T> {
+
     private int theSize;
-    private int modCount = 0;
+    private int modCnt;
     private Node<T> beginMarker;
     private Node<T> endMarker;
 
-    public MyLinkedList() {
+    MyLinkedList() {
         doClear();
     }
 
-    public void doClear() {
-        beginMarker = new Node<T>(null, null, null);
-        endMarker = new Node<T>(null, beginMarker, null);
-        beginMarker.next = endMarker;
-
-        theSize = 0;
-        modCount++;
-    }
+    // ==== public methods ====
 
     public void clear() {
         doClear();
@@ -33,118 +23,121 @@ public class MyLinkedList<T> implements Iterable<T> {
         return theSize;
     }
 
-    //add 1
-    public void add(int idx, T x) {
-        addBefore(getNode(idx), x);
+    public void add(T newValue) {
+        add(size(), newValue);
     }
 
-    //add 2
-    public void add(T x) {
-        addBefore(getNode(size()), x);
+    public void add(int idx, T newValue) {
+        addBefore(getNode(idx, 0, size()), newValue); // 0 to size
     }
 
-    //get
+    public void remove(int idx) {
+        remove(getNode(idx));
+    }
+
     public T get(int idx) {
         return getNode(idx).data;
     }
 
-    public T set(int idx, T newVal) {
-        Node<T> p = getNode(idx);
-        T oldValue = p.data;
-        p.data = newVal;
-        return oldValue;
+    public void set(int idx, T newValue) {
+
     }
 
-    private void addBefore(Node<T> p, T x) {
-        p.prev.next = p.prev = new Node<T>(x, p.prev, p);// brief case
-        theSize++;
-        modCount++;
-    }
+    // ==== private methods ====
 
-    //remove
-    public T remove(int idx) {
-        return remove(getNode(idx));
-    }
-
-    private T remove(Node<T> p) {
-        p.prev.next = p.next;
-        p.next.prev = p.prev;
-        modCount++;
-        theSize--;
-        return p.data;
-    }
-
-    private Node<T> getNode(int idx, int lower, int upper) {
-        Node<T> p;
-        if (idx < lower || idx > upper)
-            throw new IndexOutOfBoundsException();
-        if (idx < size() / 2) {
-            p = beginMarker.next;
-            for (int i = 0; i < idx; i++) {//count: idx
-                p = p.next;
-            }
-        } else {
-            p = endMarker.prev;
-            for (int i = size(); i > idx; i++) { //count: size()-(idx+1)+1=size()-idx
-                p = p.prev;
-            }
-        }
-        return p;
+    private void doClear() {
+        modCnt = 0;
+        theSize = 0;
+        beginMarker = new Node(null, null, null);
+        endMarker = new Node(null, beginMarker, null);
+        beginMarker.next = endMarker;
     }
 
     private Node<T> getNode(int idx) {
         return getNode(idx, 0, size() - 1);
     }
 
-    @Override
+    private Node<T> getNode(int idx, int lower, int upper) {
+        if (idx < lower || idx > upper) throw new IndexOutOfBoundsException();
+        Node<T> node;
+        if (idx < size() / 2) {
+            node = beginMarker.next;
+            for (int i = 0; i < idx; i++) {
+                node = node.next;
+            }
+        } else {
+            node = endMarker;
+            for (int i = size(); i > idx; i--) {
+                node = node.prev;
+            }
+        }
+        return node;
+    }
+
+    private void addBefore(Node n, T newVal) {
+        Node<T> newNode = new Node<T>(newVal, n.prev, n);
+        newNode.prev.next = newNode;
+        n.prev = newNode;
+        theSize++;
+        modCnt++;
+    }
+
+    private void remove(Node n) {
+        n.prev.next = n.next;
+        n.next.prev = n.prev;
+        theSize--;
+        modCnt++;
+    }
+
     public Iterator<T> iterator() {
-        return null;
+        return new LinkedListIterator();
     }
 
     private static class Node<T> {
-        public T data;
-        public Node<T> prev;
-        public Node<T> next;
+        T data;
+        Node prev;
+        Node next;
 
-        public Node(T data, Node<T> prev, Node<T> next) {
-            this.data = data;
+        Node(T newVal, Node prev, Node next) {
+            this.data = newVal;
             this.prev = prev;
             this.next = next;
         }
     }
 
     private class LinkedListIterator implements Iterator<T> {
+        boolean okToRemove = false;
         private Node<T> current = beginMarker.next;
-        private int expectedModCount = modCount;
-        private boolean okToRemove = false;
+        private int expectModCnt = modCnt;
 
-        @Override
         public boolean hasNext() {
             return current != endMarker;
         }
 
-        @Override
         public T next() {
-            if (modCount != expectedModCount)
+            if (expectModCnt != modCnt) {
                 throw new ConcurrentModificationException();
-            if (!hasNext())
+            }
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             T nextItem = current.data;
             current = current.next;
             okToRemove = true;
             return nextItem;
         }
 
-
-        @Override
         public void remove() {
-            if (modCount != expectedModCount)
+            if (expectModCnt != modCnt) {
                 throw new ConcurrentModificationException();
-            if (!okToRemove)
+            }
+            if (!okToRemove) {
                 throw new IllegalStateException();
+            }
             MyLinkedList.this.remove(current.prev);
-            expectedModCount++;
             okToRemove = false;
         }
     }
 }
+
+

@@ -1,149 +1,113 @@
-/**
- * Author: Spikerman < mail4spikerman@gmail.com >
- * Created Date: 17/1/10
- */
-public class BinarySearchTree<AnyType extends Comparable<? super AnyType>> {
-    private BinaryNode<AnyType> root;
+public class BinarySearchTree<T extends Comparable<? super T>> {
+    private Node<T> root;
 
-    public BinarySearchTree() {
-        root = null;
-    }
-
-    //todo Internal method to insert into a subtree     增
-    private BinaryNode<AnyType> insert(AnyType x, BinaryNode<AnyType> t) {
-        if (t == null)
-            return new BinaryNode<AnyType>(x, null, null);//todo return the new root of the tree after insertion
-        int compareResult = x.compareTo(t.element);
-        if (compareResult < 0)
-            t.left = insert(x, t.left);
-        else if (compareResult > 0)
-            t.right = insert(x, t.right);
-        else
-            ;//todo equal do nothing
-
-        return t;
-    }
-
-    //todo Internal method to remove from a subtree     删
-    private BinaryNode<AnyType> remove(AnyType x, BinaryNode<AnyType> t) {
-        if (t == null)
-            return null;
-        int compareResult = x.compareTo(t.element);
-        if (compareResult < 0)
-            t.left = remove(x, t.left);
-        else if (compareResult > 0)
-            t.right = remove(x, t.right);
-        else if (t.left != null && t.right != null) {
-            t.element = findMin(t.right).element;
-            t.right = remove(t.element, t.right);
-        } else
-            t = (t.left != null) ? t.left : t.right;
-        return t;
-
-    }
-
-
-    //todo Internal method to find an item in a subtree. 查
-    public boolean contains(AnyType x, BinaryNode<AnyType> t) {
-        if (t == null)
-            return false;
-
-        int compareResult = x.compareTo(t.element);
-        if (compareResult < 0)
-            return contains(x, t.left);
-        else if (compareResult > 0)
-            return contains(x, t.right);
-        else
-            return true;
-    }
-
-    //todo Internal method to find the smallest item in a subtree.
-    private BinaryNode<AnyType> findMin(BinaryNode<AnyType> t) {
-        if (t == null)
-            return null;
-        else if (t.left == null)
-            return t;
-        else
-            return findMin(t.left);
-    }
-
-    //todo Internal method to find the largest item in a subtree.
-    private BinaryNode<AnyType> findMax(BinaryNode<AnyType> t) {
-        if (t == null)
-            return null;
-
-        while (t.right != null) {
-            t = t.right;
-        }
-        return t;
-    }
+    // ======== public method ========
 
     public boolean isEmpty() {
         return root == null;
     }
 
-    public boolean contains(AnyType x) {
-        return contains(x, root);
+    public void clear() {
+        root = null;
     }
 
-    public AnyType findMin() throws Exception {
-        if (isEmpty())
-            throw new Exception();
-        return findMin(root).element;
+    public boolean contains(T data) {
+        return contains(data, root);
     }
 
-    public AnyType findMax() throws Exception {
-        if (isEmpty())
-            throw new Exception();
-        return findMax(root).element;
+    public void insert(T data) {
+        insert(data, root);
     }
 
-    public void insert(AnyType t) {
-        root = insert(t, root);
+    public void remove(T data) {
+        remove(data, root);
     }
 
-    public void remove(AnyType t) {
-        root = remove(t, root);
+    public T findMax() {
+        if (isEmpty()) throw new IllegalStateException();
+        return findMax(root);
     }
 
-    //todo Internal method to print a subtree in sorted order.
-    private void print(BinaryNode<AnyType> t) {
-        if (t != null) {
-            print(t.left);
-            System.out.println(t.element);
-            print(t.right);
+    public T findMin() {
+        if (isEmpty()) throw new IllegalStateException();
+        return findMin(root);
+    }
+
+    // ======== private method ========
+
+    private Node<T> insert(T data, Node<T> node) {
+        if (node == null) return new Node<T>(data, null, null);
+        int compareResult = data.compareTo(node.data);
+        if (compareResult < 0) {
+            node.left = insert(data, node.left);
+        } else if (compareResult > 0) {
+            node.right = insert(data, node.right);
+        }
+        // ignore duplicate
+        return node;
+    }
+
+    private Node<T> remove(T data, Node<T> node) {
+        if (node == null) return null;
+        int compareResult = data.compareTo(node.data);
+        if (compareResult < 0) {
+            node.left = remove(data, node.left);
+        } else if (compareResult > 0) {
+            node.right = remove(data, node.right);
+        } else if (node.left != null && node.right != null) {
+            node.data = findMin(node.right);
+            node.right = remove(node.data, node.right);
+        } else {
+            node = node.left != null ? node.left : node.right;
+        }
+        return node;
+    }
+
+    private boolean contains(T data, Node<T> node) {
+        if (node == null) return false;
+        int compareResult = data.compareTo(node.data);
+        if (compareResult < 0) {
+            return contains(data, node.left);
+        } else if (compareResult > 0) {
+            return contains(data, node.right);
+        } else {
+            return true;
         }
     }
 
-    public void print() {
-        if (isEmpty())
-            System.out.println("Empty Tree");
-        else
-            print(root);
+    private T findMax(Node<T> node) {
+        if (node == null) return null;
+        if (node.right == null) return node.data;
+        return findMax(node.right);
     }
 
-    //todo Internal method to compute height of a subtree.
-    private int height(BinaryNode<AnyType> t) {
-        if (t == null)
-            return -1;//todo 注意返回值
-        return Math.max(height(t.left), height(t.right));
+    private T findMin(Node<T> node) {
+        if (node == null) return null;
+        if (node.left == null) return node.data;
+        return findMin(node.left);
     }
 
-    private static class BinaryNode<T> {
-        T element;
-        BinaryNode<T> left;
-        BinaryNode<T> right;
 
-        public BinaryNode(T element) {
-            this.element = element;
-        }
+    private static class Node<T> {
+        T data;
+        Node<T> left;
+        Node<T> right;
 
-        public BinaryNode(T element, BinaryNode<T> left, BinaryNode<T> right) {
-            this.element = element;
+        Node(T data, Node<T> left, Node<T> right) {
+            this.data = data;
             this.left = left;
             this.right = right;
         }
+
+        Node() {
+            data = null;
+            left = null;
+            right = null;
+        }
     }
-
-
 }
+
+// each public method has an corresponding private method (including node argument) returning node in order to perform recursion
+// remove method has two situation, single child and two child
+// before findMax and findMin, check if the tree is empty
+// generic type T must extends from Comparable class so that it can invokes compareTo method
