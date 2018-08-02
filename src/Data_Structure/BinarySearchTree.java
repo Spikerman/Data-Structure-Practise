@@ -1,3 +1,5 @@
+package Data_Structure;
+
 public class BinarySearchTree<T extends Comparable<? super T>> {
     private Node<T> root;
 

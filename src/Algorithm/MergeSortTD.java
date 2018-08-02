@@ -1,5 +1,6 @@
 package Algorithm;
 
+import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -12,7 +13,7 @@ public class MergeSortTD {
     private static int[] aux;
 
     private static void sort(int[] arr, int low, int high) {
-        if (high <= low)//todo "<=" 注意，否则会报错
+        if (high <= low)
             return;
         int mid = (low + high) / 2;
         sort(arr, low, mid);
@@ -60,3 +61,6 @@ public class MergeSortTD {
         }
     }
 }
+
+
+
